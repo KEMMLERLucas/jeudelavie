@@ -3,22 +3,21 @@ val g=List((-1,1), (0,1), (1,2), (2,0), (2,1))
 val l = List(" XX",
     "  X",
     "XXX")
-val l = List(" XX","  X","XXX")
 def chainesToGrille(l:List[String]): Grille={
     def aux(posX:Int,posY:Int): Grille={
         if(l.length<posX+1){
             //Lors de la prochaine itération, on va sortir du tableau
             Nil//On retourne la grille, normalement remplie
         }else{//On est dans le tableau
-            val chaineActuelle=l(posX);
-            val res=(posX,posY);
+            val chaineActuelle=l(posX)
+            val res=(posX,posY)
             if(chaineActuelle.charAt(posY).compare('X')==0){//Lors que l'ont prend l'élément de la chaine actuelle et que l'on regarde sa valeur à la pos X, c'est égal à 0 donc c'est vrai
                 //On doit vérifier que, lors de la prochaine itération, posY ne dépasse pas le tableau
                 if(posY+1>=chaineActuelle.length){
                     //Lors de la prochaine itération, on sera en dehors de la chaîne. On l'ajoute tout de même à la grille
 
                     //On appelle aux sur la prochaine colone
-                    res::aux(posX+1,0);
+                    res::aux(posX+1,0)
                 }else{//Lors de la prochaine itération, c'est toujours bon.
                     //Lors de la prochaine itération, on ne sera pas en dehors de la chaîne.
 
@@ -29,7 +28,7 @@ def chainesToGrille(l:List[String]): Grille={
                 if(posY+1>=chaineActuelle.length){
                     //Lors de la prochaine itération, on sera en dehors de la chaîne.
                     //On appelle aux sur la prochaine colone
-                    res::aux(posX+1,0);
+                    res::aux(posX+1,0)
                 }else{//Lors de la prochaine itération, c'est toujours bon.
                     //Lors de la prochaine itération, on ne sera pas en dehors de la chaîne.
                     res::aux(posX,posY+1)
@@ -41,7 +40,7 @@ def chainesToGrille(l:List[String]): Grille={
 }
 chainesToGrille(l)
 assert(chainesToGrille(l) == List((0,0), (0,1), (0,2), (1,0), (1,1), (1,2), (2,0), (2,1), (2,2)))
-print(5);
+print(5)
 
 val (x,y)=(1,5)
 print(x)
@@ -70,86 +69,93 @@ def maxY(g:Grille, max:Int): Int = g match{
 }
 def minX(g: Grille,min:Int):Int=g match {
     case Nil=>min
-    case t::_=>
+    case t::q=>
         val(x,y)=t
         if(x<min){
-            minX(g,x)
+            minX(q,x)
         } else {
-            minX(g, min)
+            minX(q, min)
         }
 }
 def minY(g: Grille,min:Int):Int=g match {
     case Nil=>min
-    case t::_=>
+    case t::q=>
         val(x,y)=t
         if(y<min){
-            minY(g,y)
+            minY(q,y)
         } else {
-            minY(g, min)
+            minY(q, min)
         }
 }
 //Test des méthodes min et max
-maxX(chainesToGrille(l),0);
-maxY(chainesToGrille(l),0)
-minX(chainesToGrille(l),10)
+maxX(chainesToGrille(l),0);//C'est ok ça marche
+maxY(chainesToGrille(l),0)//Boucle peut-être ?
+
+minX(chainesToGrille(l),10)//Boucle
+
 minY(chainesToGrille(l),10)
 //Faire le parcours et regarder si les valeurs sont présentes dans la grille.
 def afficherGrille(g:Grille): Unit ={
-    val MaxX : Int = maxX(g,null);
-    val MaxY = maxY(g,null);
-    val MinX = minX(g,null);
-    val MinY = minY(g,null);
-    def aux(posX:Int,posY:Int):Grille={
+    val MaxX : Int = maxX(g,0)
+    val MaxY = maxY(g,0)
+    val MinX = minX(g,20)
+    val MinY = minY(g,20)
+    def aux(g:Grille,posX:Int,posY:Int):Unit={
         if(g==Nil){
             Nil //Fin de la grille mais c'est pas forcément finis
         }else{
-            val tuple=g(1);//On récupère la valeur du premier tuple de la grille
-            val(x,y)=tuple;
-            if(MaxY>posY+1){
+            val (x, y)=g.head;//On récupère la valeur du premier tuple de la grille
+            if(MaxY<posY){
                 if(x==posX && y ==posY){
                     print("X")
-                    g.tail
                     Nil
                 }else{
-                    print(" ")
-                    g.tail
+                    print("_")
                     Nil
                 }
             }else{//On est dans le tableau
-                if(MaxX<posX+1){
+                val o=posX+1
+                if(MaxX<o){
                     if(x==posX && y ==posY){
-                        print("X");
-                        print("\n");
-                        g.tail
-                        aux(0,posY+1)
+                        print("X")
+                        print("\n")
+                        aux(g.tail,0,posY+1)
                     }else{
-                        print(" ")
-                        print("\n");
-                        g.tail
-                        aux(0,posY+1)
+                        print("_")
+                        print("\n")
+                        aux(g.tail,0,posY+1)
                     }
                 }else{ //On est dans la ligne la
-                    if(x==posX && y ==posY){
-                        print("X");
-                        g.tail;
-                        aux(posX+1,posY)
+                    if(x==posX && y == posY){
+                        print("X")
+                        aux(g.tail,posX+1,posY)
                     }else{
-                        print(" ")
-                        g.tail
-                        aux(posX+1,posY)
+                        print("_")
+                        aux(g.tail,posX+1,posY)
                     }
                 }
             }
         }
     }
-    aux(MinX,MinY);
+    aux(g,MinX,MinY)
 }
-afficherGrille(chainesToGrille(l));
+afficherGrille(chainesToGrille(l))
+
 //question3
 def voisine8(x:Int,y:Int):List[(Int, Int)]={
     List((x-1,y-1),(x,y-1),(x+1,y-1),(x-1,y),(x,y),(x+1,y),(x-1,y+1),(x,y+1),(x+1,y+1))
 }
 //question 4
+def estDedans(g:Grille,v:(Int,Int)): Boolean = g match {
+    case Nil => false;
+    case t::q =>
+        if(t==v){
+            true
+        } else {
+            estDedans(q,v)
+        }
+}
+
 def combientSontDedans(g:Grille,test:Grille, acc:Int): Int = test match{
     case Nil => acc
     case t::q =>
@@ -159,15 +165,7 @@ def combientSontDedans(g:Grille,test:Grille, acc:Int): Int = test match{
             combientSontDedans(g,q,acc)
         }
 }
-def estDedans(g:Grille,v:(Int,Int)): Boolean = g match {
-    case Nil => false;
-    case t::q =>
-        if(t==v){
-            true
-        } else {
-            estDedans(q,v);
-        }
-}
+
 def surviante(gDeTouteLesCellulesDuJeu: Grille,gDeTouteLesCellueVivante:Grille): Grille= gDeTouteLesCellueVivante match{
     case Nil => Nil
     case t::q =>
