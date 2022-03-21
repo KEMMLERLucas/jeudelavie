@@ -186,22 +186,34 @@ def survivante(gDeTouteLesCellulesDuJeu: Grille,gDeTouteLesCellueVivante:Grille)
             survivante(gDeTouteLesCellulesDuJeu,q)
         }
 }
-def candidate(gDeTouteLesCellulesDuJeu: Grille,gDeTouteLesCellueMorte:Grille): Grille= gDeTouteLesCellueMorte match {
-    case Nil => Nil
-    case t::q =>
-    val (x,y) = t
-    val c=combientSontDedans(gDeTouteLesCellulesDuJeu,voisine8(x, y),0)
-    if(c==3){
-        t::candidate(gDeTouteLesCellulesDuJeu,q)
-    }else{
-        candidate(gDeTouteLesCellulesDuJeu,q)
+def candidate(gDeTouteLesCellulesDuJeu: Grille): Grille={
+    def aux(grilleAux: Grille, grilleRes: Grille): Grille= grilleAux match {
+        case Nil => grilleRes
+        case t::q =>
+            val (x,y) = t
+            if(estDedans(gDeTouteLesCellulesDuJeu,t)) aux(q, grilleRes)
+            else aux(q, grilleRes ++ voisine8(x,y))
     }
-}
-
+    aux(gDeTouteLesCellulesDuJeu,Nil)
+} // Prend pas en compte les doubles
+/*
 def naissances(gDeToutesLesNaissances: Grille):Grille={
+
+    def aux(grilleAux: Grille, grilleRes: Grille): Grille= grilleAux match {
+        case //Check
+    }{
+
+    }
     gSurvivante=survivante()
     aux(gNaiss,gCand,gSurv){
+        val c=combientSontDedans(gDeTouteLesCellulesDuJeu,voisine8(x, y),0)
+        if(c==3){
+            t::candidate(gDeTouteLesCellulesDuJeu,q)
+        }else{
+            candidate(gDeTouteLesCellulesDuJeu,q)
+        }
 
     }
 
 }
+*/
