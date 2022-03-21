@@ -1,6 +1,6 @@
 type Grille = List[(Int,Int)]
 val nique=List((-1,1), (0,1), (1,2), (2,0), (2,1))
-val t=List((0,1),(0,2),(1,2),(2,0),(2,1),(2,2));
+val t=List((0,1),(0,2),(1,2),(2,0),(2,1),(2,2))
 val l = List(" XX",
     "  X",
     "XXX")
@@ -58,7 +58,7 @@ def maxX(g:Grille):Int={
             }
     }
     val (a,b)=g.head
-    aux(g.tail,a);
+    aux(g.tail,a)
 }
 
 def maxY(g:Grille):Int={
@@ -73,7 +73,7 @@ def maxY(g:Grille):Int={
             }
     }
     val (a,b)=g.head
-    aux(g.tail,b);
+    aux(g.tail,b)
 }
 
 def minX(g:Grille):Int={
@@ -88,7 +88,7 @@ def minX(g:Grille):Int={
             }
     }
     val (a,b)=g.head
-    aux(g.tail,a);
+    aux(g.tail,a)
 }
 
 def minY(g:Grille):Int={
@@ -103,7 +103,7 @@ def minY(g:Grille):Int={
             }
     }
     val (a,b)=g.head
-    aux(g.tail,b);
+    aux(g.tail,b)
 }
 val(c,d)=t.head
 println("C: "+ c+ "D:"+d)
@@ -127,7 +127,7 @@ def estDedans(g:Grille,v:(Int,Int)): Boolean = g match {
         }
 }
 
-def afficherGrille2(grille: Grille):Unit={
+def afficherGrille(grille: Grille):Unit={
     val MaxXColonne : Int = maxX(grille)
     val MaxYLigne = maxY(grille)
     val MinXColonne = minX(grille)
@@ -137,8 +137,8 @@ def afficherGrille2(grille: Grille):Unit={
         if(ligne>MaxYLigne){
         }else{
             if(colonne>MaxXColonne){
-                print("\n");
-                aux(MinXColonne,ligne+1);
+                print("\n")
+                aux(MinXColonne,ligne+1)
             }else{
                 //println("\n Ligne: "+ligne + " Colonne: "+colonne)
                 if(estDedans(grille,(ligne,colonne))){
@@ -153,7 +153,7 @@ def afficherGrille2(grille: Grille):Unit={
     }
     aux(MinXColonne,MinYLigne)
 }
-afficherGrille2(t)
+afficherGrille(t)
 
 //question3
 def voisine8(x:Int,y:Int):List[(Int, Int)]={
@@ -172,7 +172,7 @@ def combientSontDedans(g:Grille,test:Grille, acc:Int): Int = test match{
         }
 }
 
-
+/*
 def survivante(gDeTouteLesCellulesDuJeu: Grille,gDeTouteLesCellueVivante:Grille): Grille= gDeTouteLesCellueVivante match{
     case Nil => Nil
     case t::q =>
@@ -192,9 +192,74 @@ def candidate(gDeTouteLesCellulesDuJeu: Grille,gDeTouteLesCellulesVivantes: Gril
         case t::q =>
             val (x,y) = t
             if(combientSontDedans(gDeTouteLesCellulesVivantes,voisine8(x,y),0)==3) aux(q,t::grilleRes)
+            else
     }
     aux(gDeTouteLesCellulesDuJeu,Nil)
 } // Prend pas en compte les doubles
+*/
+def survivante(grille:Grille): Grille = {
+    def aux1(grilleRes: Grille, acc: Grille): Grille = grilleRes match {
+        case Nil => acc
+        case t::q =>
+            val (x,y)=t
+            if(aux2(voisine8(x, y)) == 2 || aux2(voisine8(x, y))==3 ) aux1(q, acc.concat(t::Nil))
+            else aux1(q,acc)
+
+    }
+
+    def aux2(l:List[(Int, Int)]): Int = {
+        l.intersect(grille).length
+    }
+
+    aux1(grille, List[(Int, Int)]())
+}
+
+
+def candidate(grille: Grille): Grille = {
+    def aux1(grille: Grille, acc: Grille): Grille = grille match {
+        case Nil => acc
+        case t::q =>
+            val (x,y)=t
+            if(aux2(voisine8(x, y)) == 2 || aux2(voisine8(x, y)) == 3 )aux1(q, acc)
+            else aux1(q, acc.concat(t::Nil))
+    }
+
+    def aux2(l:List[(Int, Int)]): Int = {
+        l.intersect(grille).length
+    }
+
+    aux1(grille, List[(Int, Int)]())
+}
+
+
+def naissances(grille: Grille): Grille ={
+    def aux1(grilleRes: Grille, acc: Grille): Grille = grilleRes match {
+        case Nil => acc
+        case t::q =>
+            if(aux2(candidate(grille)) == 3) aux1(q, acc.concat(t::Nil))
+            else aux1(q, acc)
+
+    }
+
+    def aux2(l:List[(Int, Int)]): Int = {
+        l.intersect(grille).length
+    }
+
+    aux1(grille, List[(Int, Int)]())
+}
+
+
+//grille initialise affiche en fonction d'un nb d'étapes n et
+// affiche n itérations de la simulation
+def jeuDeLaVie(dep: Grille, n: Int): Unit = {
+    println("Etape suivante : ")
+    afficherGrille(dep)
+    if (n > 0) {
+        jeuDeLaVie((survivante(dep) ++ naissances(dep)), n - 1)
+    }
+}
+
+jeuDeLaVie(t,4)
 /*
 def naissances(gDeToutesLesNaissances: Grille):Grille={
 
