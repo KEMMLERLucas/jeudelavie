@@ -186,13 +186,12 @@ def survivante(gDeTouteLesCellulesDuJeu: Grille,gDeTouteLesCellueVivante:Grille)
             survivante(gDeTouteLesCellulesDuJeu,q)
         }
 }
-def candidate(gDeTouteLesCellulesDuJeu: Grille): Grille={
+def candidate(gDeTouteLesCellulesDuJeu: Grille,gDeTouteLesCellulesVivantes: Grille): Grille={
     def aux(grilleAux: Grille, grilleRes: Grille): Grille= grilleAux match {
         case Nil => grilleRes
         case t::q =>
             val (x,y) = t
-            if(estDedans(gDeTouteLesCellulesDuJeu,t)) aux(q, grilleRes)
-            else aux(q, grilleRes ++ voisine8(x,y))
+            if(combientSontDedans(gDeTouteLesCellulesVivantes,voisine8(x,y),0)==3) aux(q,t::grilleRes)
     }
     aux(gDeTouteLesCellulesDuJeu,Nil)
 } // Prend pas en compte les doubles
