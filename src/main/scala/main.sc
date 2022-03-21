@@ -172,6 +172,7 @@ def combientSontDedans(g:Grille,test:Grille, acc:Int): Int = test match{
         }
 }
 
+
 def survivante(gDeTouteLesCellulesDuJeu: Grille,gDeTouteLesCellueVivante:Grille): Grille= gDeTouteLesCellueVivante match{
     case Nil => Nil
     case t::q =>
@@ -184,4 +185,23 @@ def survivante(gDeTouteLesCellulesDuJeu: Grille,gDeTouteLesCellueVivante:Grille)
         } else {
             survivante(gDeTouteLesCellulesDuJeu,q)
         }
+}
+def candidate(gDeTouteLesCellulesDuJeu: Grille,gDeTouteLesCellueMorte:Grille): Grille= gDeTouteLesCellueMorte match {
+    case Nil => Nil
+    case t::q =>
+    val (x,y) = t
+    val c=combientSontDedans(gDeTouteLesCellulesDuJeu,voisine8(x, y),0)
+    if(c==3){
+        t::candidate(gDeTouteLesCellulesDuJeu,q)
+    }else{
+        candidate(gDeTouteLesCellulesDuJeu,q)
+    }
+}
+
+def naissances(gDeToutesLesNaissances: Grille):Grille={
+    gSurvivante=survivante()
+    aux(gNaiss,gCand,gSurv){
+
+    }
+
 }
