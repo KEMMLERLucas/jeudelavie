@@ -1,5 +1,5 @@
 type Grille = List[(Int,Int)]
-val nique=List((-1,1), (0,1), (1,2), (2,0), (2,1))
+val test2=List((-1,1), (0,1), (1,2), (2,0), (2,1))
 val t=List((0,1),(0,2),(1,2),(2,0),(2,1),(2,2))
 val l = List(" XX",
     "  X",
@@ -171,32 +171,6 @@ def combientSontDedans(g:Grille,test:Grille, acc:Int): Int = test match{
             combientSontDedans(g,q,acc)
         }
 }
-
-/*
-def survivante(gDeTouteLesCellulesDuJeu: Grille,gDeTouteLesCellueVivante:Grille): Grille= gDeTouteLesCellueVivante match{
-    case Nil => Nil
-    case t::q =>
-        val (x,y) = t
-        // on regarde combien il y a de casse a coté de celle ci dans la grille
-        val c = combientSontDedans(gDeTouteLesCellulesDuJeu,voisine8(x,y),0)
-        //regarde dans g si 2 ou 3 voisin sont present
-        if(c==2 || c==3) {
-            t::survivante(gDeTouteLesCellulesDuJeu,q)
-        } else {
-            survivante(gDeTouteLesCellulesDuJeu,q)
-        }
-}
-def candidate(gDeTouteLesCellulesDuJeu: Grille,gDeTouteLesCellulesVivantes: Grille): Grille={
-    def aux(grilleAux: Grille, grilleRes: Grille): Grille= grilleAux match {
-        case Nil => grilleRes
-        case t::q =>
-            val (x,y) = t
-            if(combientSontDedans(gDeTouteLesCellulesVivantes,voisine8(x,y),0)==3) aux(q,t::grilleRes)
-            else
-    }
-    aux(gDeTouteLesCellulesDuJeu,Nil)
-} // Prend pas en compte les doubles
-*/
 def survivante(grille:Grille): Grille = {
     def aux1(grilleRes: Grille, acc: Grille): Grille = grilleRes match {
         case Nil => acc
@@ -260,24 +234,76 @@ def jeuDeLaVie(dep: Grille, n: Int): Unit = {
 }
 
 jeuDeLaVie(t,4)
-/*
-def naissances(gDeToutesLesNaissances: Grille):Grille={
 
-    def aux(grilleAux: Grille, grilleRes: Grille): Grille= grilleAux match {
-        case //Check
-    }{
+def voisine4(l:Int, c:Int):List[(Int,Int)] = {
+    List((l, c-1),(l-1, c),(l, c+1),(l+1, c))
+}
 
-    }
-    gSurvivante=survivante()
-    aux(gNaiss,gCand,gSurv){
-        val c=combientSontDedans(gDeTouteLesCellulesDuJeu,voisine8(x, y),0)
-        if(c==3){
-            t::candidate(gDeTouteLesCellulesDuJeu,q)
-        }else{
-            candidate(gDeTouteLesCellulesDuJeu,q)
+def naisJdlv(nbVoisines:Int):Boolean={
+    nbVoisines == 3
+}
+def survisJdlv(nbVoisines:Int): Boolean = {
+    nbVoisines == 3 || nbVoisines == 2
+}
+def naisFredkin(nbVoisines:Int):Boolean={
+    nbVoisines == 3 || nbVoisines == 1
+}
+def survisFredkin(nbVoisines:Int) : Boolean = {
+    nbVoisines == 2 || nbVoisines == 4
+}
+
+
+def survivanteG(grille: Grille, voisines:(Int,Int)=>List[(Int,Int)], regles:Int=>Boolean): Grille = {
+    def aux1(grilleRes: Grille, acc: Grille): Grille = grilleRes match {
+        case Nil => acc
+        case t::q =>{
+            val (x,y)=t
+            if (regles(aux2(voisines(x, y))))aux1(q, acc.concat(t::Nil))
+            else aux1(q, acc)
         }
 
     }
 
+    def aux2(l:List[(Int, Int)]): Int = {
+        l.intersect(grille).length
+    }
+
+    aux1(grille, List[(Int, Int)]())
 }
-*/
+
+
+
+def candidateG(grille:Grille, voisines:(Int,Int)=>List[(Int,Int)], regles:Int=>Boolean): Grille = {
+    def aux1(grilleRes: Grille, acc: Grille): Grille = grille match {
+        case t::q =>{
+            val (x,y)=t
+            if (regles(aux2(voisines(x,y)))) aux1(q, acc)
+            else aux1(q, acc:::t::Nil)
+        }
+        case Nil => acc
+    }
+
+    def aux2(l:List[(Int, Int)]): Int = {
+        l.intersect(grille).length
+    }
+
+    aux1(grille, List[(Int, Int)]())
+}
+
+
+def naissancesG(grille: Grille, voisines:(Int,Int)=>List[(Int,Int)], reglejdlv:Int=>Boolean, regleNait:Int=>Boolean): Grille ={
+    @scala.annotation.tailrec
+    def aux1(grilleRes: Grille, acc: Grille): Grille = grilleRes match {
+        case Nil => acc
+        case t::q=>{
+            if(regleNait(aux2(candidateG(grille, voisines, reglejdlv))))aux1(q, acc.concat(t::Nil))
+            else aux1(q, acc)
+        }
+    }
+
+    def aux2(l:List[(Int, Int)]): Int = {
+        l.intersect(grille).length
+    }
+
+    aux1(grille, List[(Int, Int)]())
+}
